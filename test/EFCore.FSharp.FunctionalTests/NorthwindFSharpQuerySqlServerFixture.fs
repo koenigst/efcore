@@ -11,4 +11,6 @@ type NorthwindFSharpQuerySqlServerFixture<'TModelCustomizer
     and 'TModelCustomizer :> ITestModelCustomizer>() =
     inherit NorthwindQuerySqlServerFixture<'TModelCustomizer>()
 
-    override self.StoreName = "NorthwindFSharp"
+    override _.StoreName = "NorthwindFSharp"
+
+    override _.ContextType = typeof<NorthwindFSharpSqlServerContext>
