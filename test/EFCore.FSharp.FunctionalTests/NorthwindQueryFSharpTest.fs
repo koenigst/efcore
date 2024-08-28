@@ -27,6 +27,17 @@ type NorthwindQueryFSharpTest(fixture) as self =
 FROM [Customers] AS [c]
 WHERE [c].[CustomerID] IN (N'ALFKI', N'ALFKI2')")
         }
+
+    [<ConditionalTheory>]
+    [<MemberData(nameof NorthwindQueryFSharpTest.IsAsyncData)>]
+    let IsNull (isAsync: bool) =
+        task {
+            do! self.AssertQuery(isAsync, (fun ss -> ss.Set<Customer>().Where(fun c -> isNull c.Address)))
+            assertSql(
+                "SELECT [c].[CustomerID], [c].[Address], [c].[City], [c].[CompanyName], [c].[ContactName], [c].[ContactTitle], [c].[Country], [c].[Fax], [c].[Phone], [c].[PostalCode], [c].[Region]
+FROM [Customers] AS [c]
+WHERE [c].[CustomerID] IS NULL")
+        }
         
     member private self.RewriteExpectedQueryExpressionRedirect expression = base.RewriteExpectedQueryExpression expression
     member private self.RewriteServerQueryExpressionRedirect expression = base.RewriteServerQueryExpression expression

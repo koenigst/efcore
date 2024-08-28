@@ -14,3 +14,6 @@ type NorthwindFSharpQuerySqlServerFixture<'TModelCustomizer
     override _.StoreName = "NorthwindFSharp"
 
     override _.ContextType = typeof<NorthwindFSharpSqlServerContext>
+
+    override _.AddOptions builder =
+        builder.Use

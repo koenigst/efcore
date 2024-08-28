@@ -6,25 +6,24 @@ namespace Microsoft.EntityFrameworkCore.FSharp.FunctionalTests
 open System.ComponentModel.DataAnnotations
 open Microsoft.EntityFrameworkCore
 open Microsoft.EntityFrameworkCore.TestModels.Northwind
+open Microsoft.EntityFrameworkCore.Metadata.Builders
 
-type CustomerFSharp() =
-    inherit Customer()
+[<CLIMutable>]
+type CustomerFSharp = {
 
-    [<MaxLength(60)>]
-    member _.Address: string option = None
+    [<Required>]
+    CustomerID: string
+    
+    //Address: string option
+}
 
 type NorthwindFSharpSqlServerContext(options) =
     inherit NorthwindSqlServerContext(options)
 
-    member self.CustomerFSharp = self.Set<CustomerFSharp>()
+    let configure (builder: EntityTypeBuilder<CustomerFSharp>) =
+        do builder.ToView("Customers") |> ignore
+        do builder.HasKey(fun e -> e.CustomerID :> obj) |> ignore
 
     override _.OnModelCreating builder =
         do base.OnModelCreating(builder)
-        do builder.Entity<CustomerFSharp>(fun b ->
-            do b.ToTable("Customers") |> ignore
-            //do b.HasKey(fun e -> e.CustomerID :> obj) |> ignore
-            //do b.Property(fun e -> e.CustomerID).HasColumnName("CustomerID") |> ignore
-            //do b.HasOne<Customer>().WithOne().HasForeignKey(fun e -> e.CustomerID :> obj).IsRequired() |> ignore
-            )
-            |> ignore
-        //do builder.Entity<CustomerFSharp>().HasKey(fun e -> e.CustomerID :> obj) |> ignore
+        do builder.Entity<CustomerFSharp>(configure) |> ignore
